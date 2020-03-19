@@ -37,7 +37,7 @@ public class HomePage {
      *
      * @return list of prices
      */
-    public List<String> getItemsPrices() {
+    public List<String> getProductsPrices() {
         return driver.findElement(productsSection)
                 .findElements(productPriceSpan)
                 .stream()

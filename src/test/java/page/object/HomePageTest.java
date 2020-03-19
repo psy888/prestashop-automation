@@ -42,7 +42,7 @@ public class HomePageTest {
     public void itemsCurrencyCheck() {
         String[] currentCurrency = homePage.getCurrentCurrency();
         log.info("Current currency " + currentCurrency[0] + " " + currentCurrency[1]);
-        homePage.getItemsPrices().forEach(s -> {
+        homePage.getProductsPrices().forEach(s -> {
                     log.info(s + " currency found");
                     Assert.assertTrue(s.contains(currentCurrency[0]) || s.contains(currentCurrency[1]));
                 }
