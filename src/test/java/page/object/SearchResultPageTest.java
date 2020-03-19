@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -27,7 +29,6 @@ public class SearchResultPageTest {
         System.setProperty("webdriver.gecko.driver", "geckodriver.exe");
         driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
         driver.get(HOME_PAGE_URL);
         searchResultPage = new SearchResultPage(driver);
         searchResultPage.selectCurrency(Currency.USD);
@@ -61,8 +62,8 @@ public class SearchResultPageTest {
     @Test
     public void descendingSort() throws Exception {
         searchResultPage.setPriceSortDesc();
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.withTimeout(Duration.ofSeconds(10));
+//        WebDriverWait wait = new WebDriverWait(driver, 5);
+//        wait.withTimeout(Duration.ofSeconds(10));
         products = searchResultPage.getProducts();
 
         if (products.size() < 2) throw new Exception("not enough results to compare");

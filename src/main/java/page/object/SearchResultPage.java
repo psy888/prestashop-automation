@@ -4,6 +4,10 @@ import model.ProductPriceInfo;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindAll;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,22 +18,31 @@ import java.util.regex.Pattern;
 public class SearchResultPage extends HomePage {
 
     //currency
-    private By currentCurrency = By.cssSelector(".currency-selector.dropdown span.expand-more");
+    @FindBy(css = ".currency-selector.dropdown span.expand-more")
+    private WebElement currentCurrency;
 
     ///search
-    private By searchInput = By.cssSelector("#search_widget input[type='text']");
-    private By searchButton = By.cssSelector("#search_widget button[type='submit']");
+    @FindBy(css = "#search_widget input[type='text']")
+    private WebElement searchInput;
+    @FindBy(css = "#search_widget button[type='submit']")
+    private WebElement searchButton;
 
     //sort
-    private By sortDropdownA = By.cssSelector(".products-sort-order .select-title");
-    private By sortDescA = By.xpath("//a[contains(@href,'price.desc')]");
+    @FindBy(css = ".products-sort-order .select-title")
+    private WebElement sortDropdownA;
+    @FindBy(xpath = "//a[contains(@href,'price.desc')]")
+    private WebElement sortDescA;
 
     //products
-    private By totalProductsCountP = By.cssSelector("#products .total-products");
-    private By productArticle = By.cssSelector("#products article.product-miniature");
+    @FindBy(css = "#products .total-products")
+    private WebElement totalProductsCountP;
+    @FindAll(@FindBy(css = "#products article.product-miniature"))
+    List<WebElement> productArticles;
 
     //product info
-    private By productPricesDiv = By.cssSelector(".product-price-and-shipping");
+    @FindAll(@FindBy(css = ".product-price-and-shipping"))
+    List<WebElement> productPricesDivs;
+
     private By productRegularPriceSpan = By.cssSelector("span.regular-price");
     private By productPriceSpan = By.cssSelector("span.price");
     private By productDiscountSpan = By.cssSelector("span.discount-percentage");
@@ -37,6 +50,8 @@ public class SearchResultPage extends HomePage {
 
     public SearchResultPage(WebDriver driver) {
         super(driver);
+        AjaxElementLocatorFactory factory = new AjaxElementLocatorFactory(driver,100);
+        PageFactory.initElements(driver,this);
     }
 
 
@@ -45,11 +60,11 @@ public class SearchResultPage extends HomePage {
     }
 
     private void insertSearchRequest(String request) {
-        driver.findElement(searchInput).sendKeys(request);
+        searchInput.sendKeys(request);
     }
 
     private void submitSearchRequest() {
-        driver.findElement(searchButton).click();
+        searchButton.click();
     }
 
 
@@ -59,12 +74,12 @@ public class SearchResultPage extends HomePage {
     }
 
     private void showCurrencyDropdown() {
-        driver.findElement(currentCurrency).click();
+        currentCurrency.click();
     }
 
     public int getTotalProductsCount() {
         Pattern pattern = Pattern.compile("\\d+");
-        Matcher matcher = pattern.matcher(driver.findElement(totalProductsCountP).getText());
+        Matcher matcher = pattern.matcher(totalProductsCountP.getText());
         if (matcher.find()) {
             return Integer.parseInt(matcher.group());
         }
@@ -73,7 +88,7 @@ public class SearchResultPage extends HomePage {
 
     public int countFoundProducts() {
         //TODO impl pagination check
-        return driver.findElements(productArticle).size();
+        return productArticles.size();
     }
 
     public void findItems(String searchRequest) {
@@ -83,11 +98,11 @@ public class SearchResultPage extends HomePage {
 
     public void setPriceSortDesc() {
         showOrderDropdown();
-        driver.findElement(sortDescA).click();
+        sortDescA.click();
     }
 
     private void showOrderDropdown() {
-        driver.findElement(sortDropdownA).click();
+        sortDropdownA.click();
     }
 
 
@@ -106,7 +121,7 @@ public class SearchResultPage extends HomePage {
     }
 
     private List<WebElement> getProductWebElements() {
-        return driver.findElements(productPricesDiv);
+        return productPricesDivs;
     }
 
     private Double getPrice(WebElement w, By targetPrice) {
@@ -151,7 +166,5 @@ public class SearchResultPage extends HomePage {
     }
 
 
-    public By getMarkerSelector(){
-        return productPricesDiv;
-    }
+
 }
