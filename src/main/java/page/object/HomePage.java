@@ -13,37 +13,36 @@ import java.util.stream.Collectors;
 public class HomePage {
 
     private final WebDriver driver;
-        //todo recheck selectors
+    //todo recheck selectors
     //currency
-    By currentCurrency = By.xpath("//*[@id='_desktop_currency_selector']/div/ul/li[@class='current']/a");
-    By currency = By.xpath("//*[@id='_desktop_currency_selector']/div/ul/li/a");
+    private By currentCurrency = By.cssSelector(".currency-selector.dropdown span.expand-more");
+    private By currency = By.xpath("//*[@id='_desktop_currency_selector']/div/ul/li/a");
 
     //products
-    By featuredProductsSection = By.xpath("//section[@class='featured-products'");
-    By productsDiv = By.xpath("//div[@class='products']");
-    By productArticle = By.xpath(".//article[itemtype='http://schema.org/Product']");
+    private By featuredProductsSection = By.cssSelector(".featured-products");
+    private By productsDiv = By.xpath("//div[@class='products']");
+    private By productArticle = By.xpath(".//article[itemtype='http://schema.org/Product']");
 
     //product info
-    By productPriceAndShippingDiv = By.xpath(".//div[@class='product-price-and-shipping']");
-    By productPriceSpan = By.xpath(".//span[@class='price']");
+    private By productPriceAndShippingDiv = By.xpath(".//div[@class='product-price-and-shipping']");
+    private By productPriceSpan = By.cssSelector("article .product-price-and-shipping span.price");
 
 
     private By getCurrencySelector(Currency currency) {
         return By.xpath("//*[@id='_desktop_currency_selector']/div/ul/li/a[text()[contains(.,'" + currency.toString() + "')]]");
     }
 
-    private String getCurrencyFromString(String str){
-        return Arrays.stream(str.split("[a-zA-Z]{3}")).findFirst().orElse("");
+    private String[] getCurrencyFromString(String str) {
+        return str.split(" ",2);
     }
 
 
     private void selectCurrency(Currency currency) {
         driver.findElement(getCurrencySelector(currency)).click();
     }
+//#_desktop_currency_selector div.currency-selector.dropdown span.expand-more
 
-
-
-    public String getCurrentCurrency() {
+    public String[] getCurrentCurrency() {
         return getCurrencyFromString(driver.findElement(currentCurrency).getText());
     }
 
@@ -52,12 +51,11 @@ public class HomePage {
      *
      * @return list of prices
      */
-    private List<String> getItemsPrices() {
+    public List<String> getItemsPrices() {
         return driver.findElement(featuredProductsSection)
                 .findElements(productPriceSpan)
                 .stream()
-//                .map(WebElement::getText)
-                .map(webElement -> getCurrencyFromString(webElement.getText()))
+                .map(WebElement::getText)
                 .collect(Collectors.toList());
     }
 
