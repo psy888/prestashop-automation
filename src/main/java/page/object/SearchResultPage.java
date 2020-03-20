@@ -51,7 +51,7 @@ public class SearchResultPage extends HomePage {
     public SearchResultPage(WebDriver driver) {
         super(driver);
         AjaxElementLocatorFactory factory = new AjaxElementLocatorFactory(driver,100);
-        PageFactory.initElements(driver,this);
+        PageFactory.initElements(factory,this);
     }
 
 
@@ -99,6 +99,7 @@ public class SearchResultPage extends HomePage {
     public void setPriceSortDesc() {
         showOrderDropdown();
         sortDescA.click();
+//        driver.get("http://prestashop-automation.qatestlab.com.ua/uk/search?controller=search&order=product.price.desc&s=dress");
     }
 
     private void showOrderDropdown() {
@@ -107,8 +108,11 @@ public class SearchResultPage extends HomePage {
 
 
     public List<ProductPriceInfo> getProducts() {
+
         List<ProductPriceInfo> productPriceInfos = new ArrayList<>();
+
         List<WebElement> webElements = getProductWebElements();
+
         webElements.forEach(w -> {
             productPriceInfos.add(ProductPriceInfo.builder()
                     .price(getPrice(w, productPriceSpan))
@@ -117,6 +121,7 @@ public class SearchResultPage extends HomePage {
                     .currency(getCurrency(w))
                     .build());
         });
+
         return productPriceInfos;
     }
 
@@ -164,6 +169,7 @@ public class SearchResultPage extends HomePage {
         }
         throw new RuntimeException("discount parse error");
     }
+
 
 
 
