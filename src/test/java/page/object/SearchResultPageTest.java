@@ -9,6 +9,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -28,7 +30,9 @@ public class SearchResultPageTest {
     public void setUp() throws Exception {
         System.setProperty("webdriver.gecko.driver", "geckodriver.exe");
         driver = new FirefoxDriver();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        driver.manage().timeouts().setScriptTimeout(20, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(20, TimeUnit.SECONDS);
         driver.get(HOME_PAGE_URL);
         searchResultPage = new SearchResultPage(driver);
         searchResultPage.selectCurrency(Currency.USD);
@@ -62,8 +66,8 @@ public class SearchResultPageTest {
     @Test
     public void descendingSort() throws Exception {
         searchResultPage.setPriceSortDesc();
-//        WebDriverWait wait = new WebDriverWait(driver, 5);
-//        wait.withTimeout(Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.urlContains("order=product.price.desc"));
         products = searchResultPage.getProducts();
 
         if (products.size() < 2) throw new Exception("not enough results to compare");
@@ -71,6 +75,11 @@ public class SearchResultPageTest {
         for (int i = 1; i < products.size(); i++) {
             Assert.assertTrue(products.get(i - 1).compareTo(products.get(i)) >= 0);
         }
+
+    }
+
+    @Test
+    public void discountPercentMath(){
 
     }
 }
