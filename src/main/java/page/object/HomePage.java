@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 public class HomePage {
 
     protected final WebDriver driver;
-    //todo recheck selectors
     //currency
     protected By currentCurrency = By.cssSelector(".currency-selector.dropdown span.expand-more");
 

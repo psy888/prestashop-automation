@@ -19,31 +19,41 @@ public class HomePageTest {
 
     @Before
     public void setUp() throws Exception {
+        log.info("Driver setup and configure");
+
         System.setProperty("webdriver.gecko.driver", "geckodriver.exe");
+
         driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.get(HOME_PAGE_URL);
-        homePage = new HomePage(driver);
 
+        homePage = new HomePage(driver);
     }
 
     @After
     public void tearDown() throws Exception {
+        log.info("Quit from browser and close driver");
         driver.quit();
     }
 
 
     @Test
     public void mainPageTitle() {
+        log.info("--->Start 'Right page destination test'.");
+
         Assert.assertEquals(HOME_PAGE_TITLE, driver.getTitle());
     }
 
     @Test
     public void itemsCurrencyCheck() {
+        log.info("--->Start 'Featured products currency test'.");
+
         String[] currentCurrency = homePage.getCurrentCurrency();
-        log.info("Current currency " + currentCurrency[0] + " " + currentCurrency[1]);
+
+        log.info("Current currency :" + currentCurrency[0] + " " + currentCurrency[1]);
+
         homePage.getProductsPrices().forEach(s -> {
-                    log.info(s + " currency found");
+                    log.info(s + " currency found.");
                     Assert.assertTrue(s.contains(currentCurrency[0]) || s.contains(currentCurrency[1]));
                 }
         );

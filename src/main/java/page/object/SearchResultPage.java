@@ -1,5 +1,7 @@
 package page.object;
 
+import lombok.extern.slf4j.Slf4j;
+import model.Currency;
 import model.ProductPriceInfo;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+@Slf4j
 public class SearchResultPage extends HomePage {
 
     //currency
@@ -24,18 +26,21 @@ public class SearchResultPage extends HomePage {
     ///search
     @FindBy(css = "#search_widget input[type='text']")
     private WebElement searchInput;
+
     @FindBy(css = "#search_widget button[type='submit']")
     private WebElement searchButton;
 
     //sort
     @FindBy(css = ".products-sort-order .select-title")
     private WebElement sortDropdownA;
+
     @FindBy(xpath = "//a[contains(@href,'price.desc')]")
     private WebElement sortDescA;
 
     //products
     @FindBy(css = "#products .total-products")
     private WebElement totalProductsCountP;
+
     @FindAll(@FindBy(css = "#products article.product-miniature"))
     List<WebElement> productArticles;
 
@@ -50,8 +55,8 @@ public class SearchResultPage extends HomePage {
 
     public SearchResultPage(WebDriver driver) {
         super(driver);
-        AjaxElementLocatorFactory factory = new AjaxElementLocatorFactory(driver,100);
-        PageFactory.initElements(factory,this);
+        AjaxElementLocatorFactory factory = new AjaxElementLocatorFactory(driver, 100);
+        PageFactory.initElements(factory, this);
     }
 
 
@@ -60,20 +65,27 @@ public class SearchResultPage extends HomePage {
     }
 
     private void insertSearchRequest(String request) {
+        log.info("Insert '" + request + "' to search field");
         searchInput.sendKeys(request);
     }
 
     private void submitSearchRequest() {
+        log.info("Click search button.");
         searchButton.click();
     }
 
 
     public void selectCurrency(Currency currency) {
+        log.info("Set currency to '" + currency.toString() + "'.");
+
         showCurrencyDropdown();
+
+        log.info("Click on currency selector in dropdown menu");
         driver.findElement(getCurrencySelector(currency)).click();
     }
 
     private void showCurrencyDropdown() {
+        log.info("Click on currency selector to show currency dropdown");
         currentCurrency.click();
     }
 
@@ -81,14 +93,19 @@ public class SearchResultPage extends HomePage {
         Pattern pattern = Pattern.compile("\\d+");
         Matcher matcher = pattern.matcher(totalProductsCountP.getText());
         if (matcher.find()) {
-            return Integer.parseInt(matcher.group());
+            int cnt = Integer.parseInt(matcher.group());
+            log.info("Total products fond on category (parsed from site counter) : " + cnt + " products.");
+            return cnt;
         }
+        log.warn("No found total count products info");
         return -1;
     }
 
     public int countFoundProducts() {
         //TODO impl pagination check
-        return productArticles.size();
+        int cnt = productArticles.size();
+        log.info("Actually found : " + cnt + " products");
+        return cnt;
     }
 
     public void findItems(String searchRequest) {
@@ -97,18 +114,20 @@ public class SearchResultPage extends HomePage {
     }
 
     public void setPriceSortDesc() {
+        log.info("Set price descending products ordering");
         showOrderDropdown();
+        log.info("Click on Descending ordering in dropdown menu/");
         sortDescA.click();
-//        driver.get("http://prestashop-automation.qatestlab.com.ua/uk/search?controller=search&order=product.price.desc&s=dress");
     }
 
     private void showOrderDropdown() {
+        log.info("Click show ordering dropdown menu");
         sortDropdownA.click();
     }
 
 
     public List<ProductPriceInfo> getProducts() {
-
+        log.info("Add products info to list");
         List<ProductPriceInfo> productPriceInfos = new ArrayList<>();
 
         List<WebElement> webElements = getProductWebElements();
@@ -120,8 +139,11 @@ public class SearchResultPage extends HomePage {
                     .discount(getDiscountPercent(w))
                     .currency(getCurrency(w))
                     .build());
+            log.info("Product #" + productPriceInfos.size() + "\n" +
+                    productPriceInfos.get(productPriceInfos.size() - 1).toString());
         });
 
+        log.info(productPriceInfos.size() + " - total products added");
         return productPriceInfos;
     }
 
@@ -131,7 +153,7 @@ public class SearchResultPage extends HomePage {
 
     private Double getPrice(WebElement w, By targetPrice) {
         try {
-            return Double.parseDouble(cutPriceString(w.findElement(targetPrice).getText()).replace(",","."));
+            return Double.parseDouble(cutPriceString(w.findElement(targetPrice).getText()).replace(",", "."));
         } catch (Exception e) {
             return null;
         }
@@ -145,32 +167,30 @@ public class SearchResultPage extends HomePage {
         throw new RuntimeException("price parse error");
     }
 
-    private String getCurrency(WebElement w){
+    private String getCurrency(WebElement w) {
         Matcher matcher = Pattern.compile("\\s\\D+").matcher(w.findElement(productPriceSpan).getText());
-        if(matcher.find()) {
+        if (matcher.find()) {
             return matcher.group().trim();
         }
         throw new RuntimeException("Currency parse error");
     }
 
 
-    private Integer getDiscountPercent(WebElement w){
+    private Integer getDiscountPercent(WebElement w) {
         try {
             return Integer.parseInt(cutDiscountString(w.findElement(productDiscountSpan).getText()));
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
-    private String cutDiscountString(String str){
+    private String cutDiscountString(String str) {
         Matcher matcher = Pattern.compile("\\d+").matcher(str);
-        if(matcher.find()){
+        if (matcher.find()) {
             return matcher.group();
         }
         throw new RuntimeException("discount parse error");
     }
-
-
 
 
 }
