@@ -1,5 +1,6 @@
 package page.object;
 
+import model.Currency;
 import model.ProductPriceInfo;
 import org.junit.After;
 import org.junit.Assert;
@@ -7,15 +8,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static java.util.Objects.nonNull;
 
 public class SearchResultPageTest {
     private static final String HOME_PAGE_URL = "http://prestashop-automation.qatestlab.com.ua/";
@@ -24,7 +23,7 @@ public class SearchResultPageTest {
     private RemoteWebDriver driver;
     private SearchResultPage searchResultPage;
 
-    private List<ProductPriceInfo> products;
+
 
     @Before
     public void setUp() throws Exception {
@@ -68,7 +67,7 @@ public class SearchResultPageTest {
         searchResultPage.setPriceSortDesc();
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.urlContains("order=product.price.desc"));
-        products = searchResultPage.getProducts();
+        List<ProductPriceInfo> products = searchResultPage.getProducts();
 
         if (products.size() < 2) throw new Exception("not enough results to compare");
 
@@ -80,6 +79,17 @@ public class SearchResultPageTest {
 
     @Test
     public void discountPercentMath(){
+        List<ProductPriceInfo> products = searchResultPage.getProducts();
+        products.forEach(p->{
+            if(nonNull(p.getDiscount())){
+                Assert.assertEquals(
+                        p.getRegularPrice(),
+                        java.util.Optional.of(round(p.getPrice() / (100 - p.getDiscount()) * 100)).get());
+            }
+        });
+    }
 
+    private double round (double d){
+        return (double) Math.round(d*100)/100;
     }
 }
