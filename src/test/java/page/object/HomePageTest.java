@@ -1,10 +1,7 @@
 package page.object;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -14,11 +11,11 @@ import java.util.concurrent.TimeUnit;
 public class HomePageTest {
     private static final String HOME_PAGE_URL = "http://prestashop-automation.qatestlab.com.ua/";
     private static final String HOME_PAGE_TITLE = "prestashop-automation";
-    private RemoteWebDriver driver;
-    private HomePage homePage;
+    private static RemoteWebDriver driver;
+    private static HomePage homePage;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         log.info("Driver setup and configure");
 
         System.setProperty("webdriver.gecko.driver", "geckodriver.exe");
@@ -30,8 +27,8 @@ public class HomePageTest {
         homePage = new HomePage(driver);
     }
 
-    @After
-    public void tearDown() throws Exception {
+    @AfterClass
+    public static void tearDown() throws Exception {
         log.info("Quit from browser and close driver");
         driver.quit();
     }

@@ -1,4 +1,4 @@
-package page.object;
+package model;
 
 public enum Currency {
     USD,

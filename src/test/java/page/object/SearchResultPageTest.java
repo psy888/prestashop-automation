@@ -3,10 +3,7 @@ package page.object;
 import lombok.extern.slf4j.Slf4j;
 import model.Currency;
 import model.ProductPriceInfo;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -21,12 +18,12 @@ public class SearchResultPageTest {
     private static final String HOME_PAGE_URL = "http://prestashop-automation.qatestlab.com.ua/";
     private static final String SEARCH_REQUEST = "dress";
 
-    private RemoteWebDriver driver;
-    private SearchResultPage searchResultPage;
+    private static RemoteWebDriver driver;
+    private static SearchResultPage searchResultPage;
 
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         log.info("Driver setup and configure");
 
         System.setProperty("webdriver.gecko.driver", "geckodriver.exe");
@@ -43,8 +40,8 @@ public class SearchResultPageTest {
         searchResultPage.findItems(SEARCH_REQUEST);
     }
 
-    @After
-    public void tearDown() throws Exception {
+    @AfterClass
+    public static void tearDown() throws Exception {
         log.info("Quit from browser and close driver");
         driver.quit();
     }
