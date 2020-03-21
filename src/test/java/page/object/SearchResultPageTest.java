@@ -96,7 +96,7 @@ public class SearchResultPageTest {
             if (nonNull(p.getDiscount())) {
                 Assert.assertEquals(
                         p.getRegularPrice(),
-                        java.util.Optional.of(round(p.getPrice() / (100 - p.getDiscount()) * 100)).get());
+                        java.util.Optional.of(p.getPrice() / (100 - p.getDiscount()) * 100).get(),0.005);
             }
         });
     }

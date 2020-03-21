@@ -13,6 +13,7 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -129,8 +130,8 @@ public class SearchResultPage extends HomePage {
     public List<ProductPriceInfo> getProducts() {
         log.info("Add products info to list");
         List<ProductPriceInfo> productPriceInfos = new ArrayList<>();
-
         List<WebElement> webElements = getProductWebElements();
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.MILLISECONDS);
 
         webElements.forEach(w -> {
             productPriceInfos.add(ProductPriceInfo.builder()
@@ -142,6 +143,7 @@ public class SearchResultPage extends HomePage {
             log.info("Product #" + productPriceInfos.size() + "\n" +
                     productPriceInfos.get(productPriceInfos.size() - 1).toString());
         });
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
         log.info(productPriceInfos.size() + " - total products added");
         return productPriceInfos;
